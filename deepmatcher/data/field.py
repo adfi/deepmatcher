@@ -6,7 +6,7 @@ import zipfile
 import nltk
 import six
 
-import fastText
+from gensim.models import fasttext
 import torch
 from torchtext import data, vocab
 from torchtext.utils import download_from_url
@@ -38,7 +38,10 @@ class FastTextBinary(vocab.Vectors):
            cache: directory for cached model
          """
         cache = os.path.expanduser(cache)
-        if language == 'en' and url_base is None:
+        if language == 'en' and url_base:
+            self.destination = os.path.join(cache, 'wiki.' + language + '.bin')
+            url = url_base
+        elif language == 'en' and url_base is None:
             url = FastTextBinary._direct_en_url
             self.destination = os.path.join(cache, 'wiki.' + language + '.bin')
         else:
@@ -51,7 +54,7 @@ class FastTextBinary(vocab.Vectors):
         self.cache(name, cache, url=url)
 
     def __getitem__(self, token):
-        return torch.Tensor(self.model.get_word_vector(token))
+        return torch.Tensor(self.model[token])
 
     def cache(self, name, cache, url=None):
         path = os.path.join(cache, name)
@@ -72,7 +75,7 @@ class FastTextBinary(vocab.Vectors):
         if not os.path.isfile(path):
             raise RuntimeError('no vectors found at {}'.format(path))
 
-        self.model = fastText.load_model(path)
+        self.model = fasttext.FastText.load_fasttext_format(path)
         self.dim = len(self['a'])
 
 

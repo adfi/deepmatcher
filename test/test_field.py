@@ -44,6 +44,22 @@ class ClassFastTextTestCases(unittest.TestCase):
 
 class ClassFastTextBinaryTestCases(unittest.TestCase):
 
+    def test_init(self):
+        vectors_cache_dir = '.cache'
+        if os.path.exists(vectors_cache_dir):
+            shutil.rmtree(vectors_cache_dir)
+
+        pathdir = os.path.abspath(os.path.join(test_dir_path, 'test_datasets'))
+        filename = 'lee_fasttext.bin' # taken from gensim test data
+        url_base = urljoin('file:', pathname2url(os.path.join(pathdir, filename)))
+        mftb = FastTextBinary(url_base=url_base, cache=vectors_cache_dir)
+
+        self.assertEqual(mftb.dim, 10)
+
+        if os.path.exists(vectors_cache_dir):
+            shutil.rmtree(vectors_cache_dir)
+
+
     @raises(RuntimeError)
     def test_init_1(self):
         vectors_cache_dir = '.cache'
@@ -53,7 +69,7 @@ class ClassFastTextBinaryTestCases(unittest.TestCase):
         pathdir = os.path.abspath(os.path.join(test_dir_path, 'test_datasets'))
         filename = 'fasttext_sample.vec.zip'
         url_base = urljoin('file:', pathname2url(os.path.join(pathdir, filename)))
-        mftb = FastTextBinary(filename, url_base=url_base, cache=vectors_cache_dir)
+        mftb = FastTextBinary(url_base=url_base, cache=vectors_cache_dir)
 
         if os.path.exists(vectors_cache_dir):
             shutil.rmtree(vectors_cache_dir)
@@ -67,7 +83,7 @@ class ClassFastTextBinaryTestCases(unittest.TestCase):
         pathdir = os.path.abspath(os.path.join(test_dir_path, 'test_datasets'))
         filename = 'fasttext_sample_not_exist.vec.zip'
         url_base = urljoin('file:', pathname2url(os.path.join(pathdir, filename)))
-        mftb = FastTextBinary(filename, url_base=url_base, cache=vectors_cache_dir)
+        mftb = FastTextBinary(url_base=url_base, cache=vectors_cache_dir)
 
         if os.path.exists(vectors_cache_dir):
             shutil.rmtree(vectors_cache_dir)
@@ -81,7 +97,7 @@ class ClassFastTextBinaryTestCases(unittest.TestCase):
         pathdir = os.path.abspath(os.path.join(test_dir_path, 'test_datasets'))
         filename = 'fasttext_sample_not_exist.gz'
         url_base = urljoin('file:', pathname2url(os.path.join(pathdir, filename)))
-        mftb = FastTextBinary(filename, url_base=url_base, cache=vectors_cache_dir)
+        mftb = FastTextBinary(url_base=url_base, cache=vectors_cache_dir)
 
         if os.path.exists(vectors_cache_dir):
             shutil.rmtree(vectors_cache_dir)
