@@ -24,8 +24,8 @@ sys.modules['deepmatcher.modules'] = modules
 
 warnings.filterwarnings('always', module='deepmatcher')
 
-logging.basicConfig()
-logging.getLogger('deepmatcher.data.field').setLevel(logging.INFO)
+# logging.basicConfig()
+# logging.getLogger('deepmatcher.data.field').setLevel(logging.INFO)
 
 
 def process(*args, **kwargs):
