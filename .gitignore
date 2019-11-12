@@ -3,3 +3,5 @@
 deepmatcher.egg-info/*
 examples/.ipynb_checkpoints/*
 docs/build
+.DS_Store
+.vscode
