@@ -75,7 +75,7 @@ class FastTextBinary(vocab.Vectors):
         if not os.path.isfile(path):
             raise RuntimeError('no vectors found at {}'.format(path))
 
-        self.model = fasttext.FastText.load_fasttext_format(path)
+        self.model = fasttext.load_facebook_vectors(path)
         self.dim = len(self['a'])
 
 
