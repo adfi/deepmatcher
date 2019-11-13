@@ -38,5 +38,5 @@ setup(
     python_requires='>=3.5',
     install_requires=[
         'torch==0.3.1', 'tqdm', 'pyprind', 'six', 'Cython', 'torchtext==0.2.3', 'nltk>=3.2.5',
-        'gensim', 'pandas'
+        'gensim=3.8.0', 'pandas', 'sklearn==0.20.3'
     ])
