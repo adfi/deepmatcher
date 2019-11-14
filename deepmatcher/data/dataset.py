@@ -143,26 +143,33 @@ class MatchingDataset(data.Dataset):
         """
         if examples is None:
             make_example = {
-                'json': Example.fromJSON, 'dict': Example.fromdict,
-                'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format.lower()]
+                    'json': Example.fromJSON, 'dict': Example.fromdict,
+                    'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format.lower()]
+                    
+            if isinstance(path, pd.DataFrame):
+                examples = []
+                for _, line in pyprind.prog_bar(path.iterrows(), 
+                                iterations=path.shape[0],
+                                title='\nReading and processing data from'):
+                            make_example(line.values, fields)                        
+            else:
+                lines = 0
+                with open(os.path.expanduser(path), encoding="utf8") as f:
+                    for line in f:
+                        lines += 1
 
-            lines = 0
-            with open(os.path.expanduser(path), encoding="utf8") as f:
-                for line in f:
-                    lines += 1
+                with open(os.path.expanduser(path), encoding="utf8") as f:
+                    if format == 'csv':
+                        reader = unicode_csv_reader(f)
+                    elif format == 'tsv':
+                        reader = unicode_csv_reader(f, delimiter='\t')
+                    else:
+                        reader = f
 
-            with open(os.path.expanduser(path), encoding="utf8") as f:
-                if format == 'csv':
-                    reader = unicode_csv_reader(f)
-                elif format == 'tsv':
-                    reader = unicode_csv_reader(f, delimiter='\t')
-                else:
-                    reader = f
-
-                next(reader)
-                examples = [make_example(line, fields) for line in
-                    pyprind.prog_bar(reader, iterations=lines,
-                        title='\nReading and processing data from "' + path + '"')]
+                    next(reader)
+                    examples = [make_example(line, fields) for line in
+                        pyprind.prog_bar(reader, iterations=lines,
+                            title='\nReading and processing data from "' + path + '"')]
 
             super(MatchingDataset, self).__init__(examples, fields, **kwargs)
         else:
