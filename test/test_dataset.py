@@ -41,6 +41,20 @@ class ClassMatchingDatasetTestCases(unittest.TestCase):
         self.assertEqual(md.canonical_text_fields, ['_a'])
 
 
+    def test_init_2(self):
+        fields = [('left_a', MatchingField()), ('right_a', MatchingField())]
+        col_naming = {'id': 'id', 'label': 'label', 'left': 'left', 'right': 'right'}
+        path = pd.read_csv(os.path.join(test_dir_path, 'test_datasets', 'sample_table_small.csv'), 
+                na_filter=False, dtype=str)
+        md = MatchingDataset(fields, col_naming, path=path)
+        self.assertEqual(md.id_field, 'id')
+        self.assertEqual(md.label_field, 'label')
+        self.assertEqual(md.all_left_fields, ['left_a'])
+        self.assertEqual(md.all_right_fields, ['right_a'])
+        self.assertEqual(md.all_text_fields, ['left_a', 'right_a'])
+        self.assertEqual(md.canonical_text_fields, ['_a'])
+
+
 class MatchingDatasetSplitsTestCases(unittest.TestCase):
 
     def setUp(self):
