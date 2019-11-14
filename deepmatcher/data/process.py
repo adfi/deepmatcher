@@ -2,6 +2,7 @@ import copy
 import io
 import logging
 import os
+import pandas as pd
 from timeit import default_timer as timer
 
 import six
@@ -241,8 +242,11 @@ def process_unlabeled(path, trained_model, ignore_columns=None):
         ignore_columns (list):
             A list of columns to ignore in the unlabeled CSV file.
     """
-    with io.open(path, encoding="utf8") as f:
-        header = next(unicode_csv_reader(f))
+    if isinstance(path, pd.DataFrame):
+        header = path.columns
+    else:
+        with io.open(path, encoding="utf8") as f:
+            header = next(unicode_csv_reader(f))
 
     train_info = trained_model.meta
     if ignore_columns is None:
