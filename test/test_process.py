@@ -2,6 +2,7 @@ import io
 import os
 import shutil
 import unittest
+import pandas as pd
 from test import test_dir_path
 
 from nose.tools import *
@@ -158,22 +159,23 @@ class ProcessTestCases(unittest.TestCase):
             os.remove(cache_path)
 
 class ProcessUnlabeledTestCases(unittest.TestCase):
-    def test_process_unlabeled_1(self):
-        vectors_cache_dir = '.cache'
-        if os.path.exists(vectors_cache_dir):
-            shutil.rmtree(vectors_cache_dir)
 
-        data_cache_path = os.path.join(test_dir_path, 'test_datasets',
+    def setUp(self):
+        self.vectors_cache_dir = '.cache'
+        if os.path.exists(self.vectors_cache_dir):
+            shutil.rmtree(self.vectors_cache_dir)
+
+        self.data_cache_path = os.path.join(test_dir_path, 'test_datasets',
             'cacheddata.pth')
-        if os.path.exists(data_cache_path):
-            os.remove(data_cache_path)
+        if os.path.exists(self.data_cache_path):
+            os.remove(self.data_cache_path)
 
         vec_dir = os.path.abspath(os.path.join(test_dir_path, 'test_datasets'))
         filename = 'fasttext_sample.vec.zip'
         url_base = urljoin('file:', pathname2url(vec_dir)) + os.path.sep
-        ft = FastText(filename, url_base=url_base, cache=vectors_cache_dir)
+        ft = FastText(filename, url_base=url_base, cache=self.vectors_cache_dir)
 
-        train, valid, test = process(
+        train, valid, self.test = process(
             path=os.path.join(test_dir_path, 'test_datasets'),
             train='test_train.csv',
             validation='test_valid.csv',
@@ -184,28 +186,43 @@ class ProcessUnlabeledTestCases(unittest.TestCase):
             embeddings_cache_path='',
             pca=True)
 
-        model_save_path = 'sif_model.pth'
-        model = MatchingModel(attr_summarizer='sif')
-        model.run_train(
+        self.model_save_path = 'sif_model.pth'
+        self.model = MatchingModel(attr_summarizer='sif')
+        self.model.run_train(
             train,
             valid,
             epochs=1,
             batch_size=8,
-            best_save_path= model_save_path,
+            best_save_path= self.model_save_path,
             pos_neg_ratio=3)
 
+
+    def tearDown(self):
+        if os.path.exists(self.model_save_path):
+            os.remove(self.model_save_path)
+
+        if os.path.exists(self.data_cache_path):
+            os.remove(self.data_cache_path)
+
+        if os.path.exists(self.vectors_cache_dir):
+            shutil.rmtree(self.vectors_cache_dir)
+
+    def test_process_unlabeled_1(self):
         test_unlabeled = process_unlabeled(
             path=os.path.join(test_dir_path, 'test_datasets', 'test_test.csv'),
-            trained_model=model,
+            trained_model=self.model,
             ignore_columns=('left_id', 'right_id'))
 
-        self.assertEqual(test_unlabeled.all_text_fields, test.all_text_fields)
+        self.assertEqual(test_unlabeled.all_text_fields, self.test.all_text_fields)
 
-        if os.path.exists(model_save_path):
-            os.remove(model_save_path)
+    def test_process_unlabeled_2(self):
+        df = pd.read_csv(os.path.join(test_dir_path, 'test_datasets', 'test_test.csv'), 
+                na_filter=False, dtype=str)
+        test_unlabeled = process_unlabeled(
+            path=df,
+            trained_model=self.model,
+            ignore_columns=('left_id', 'right_id'))
 
-        if os.path.exists(data_cache_path):
-            os.remove(data_cache_path)
+        self.assertEqual(test_unlabeled.all_text_fields, self.test.all_text_fields)
 
-        if os.path.exists(vectors_cache_dir):
-            shutil.rmtree(vectors_cache_dir)
+        
