@@ -145,13 +145,13 @@ class MatchingDataset(data.Dataset):
             make_example = {
                     'json': Example.fromJSON, 'dict': Example.fromdict,
                     'tsv': Example.fromCSV, 'csv': Example.fromCSV}[format.lower()]
-                    
+
             if isinstance(path, pd.DataFrame):
                 examples = []
                 for _, line in pyprind.prog_bar(path.iterrows(), 
                                 iterations=path.shape[0],
                                 title='\nReading and processing data from'):
-                            make_example(line.values, fields)                        
+                            examples.append(make_example(line.values, fields))                        
             else:
                 lines = 0
                 with open(os.path.expanduser(path), encoding="utf8") as f:
