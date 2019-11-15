@@ -229,7 +229,7 @@ def process(path,
     return datasets
 
 
-def process_unlabeled(path, trained_model, ignore_columns=None):
+def process_unlabeled(path, trained_model, tokenizer=None, ignore_columns=None):
     """Creates a dataset object for an unlabeled dataset.
 
     Args:
@@ -254,8 +254,10 @@ def process_unlabeled(path, trained_model, ignore_columns=None):
     column_naming = dict(train_info.column_naming)
     column_naming['label'] = None
 
+    if not tokenizer:
+        tokenizer = train_info.tokenize
     fields = _make_fields(header, column_naming['id'], column_naming['label'],
-                          ignore_columns, train_info.lowercase, train_info.tokenize,
+                          ignore_columns, train_info.lowercase, tokenizer,
                           train_info.include_lengths)
 
     begin = timer()
