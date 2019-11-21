@@ -37,6 +37,10 @@ setup(
     packages=['deepmatcher', 'deepmatcher.data', 'deepmatcher.models'],
     python_requires='>=3.5',
     install_requires=[
-        'torch==0.3.1', 'tqdm', 'pyprind', 'six', 'Cython', 'torchtext==0.2.3', 'nltk>=3.2.5',
-        'gensim==3.8.0', 'pandas', 'sklearn'
+        'torch==0.3.1', 'tqdm', 'pyprind', 'Cython', 'torchtext==0.2.3', 'nltk>=3.2.5'
     ])
+    # when installing standalone the below dependencies are necessary
+    # but on ML Engine they're pre-installed
+    # install_requires=[
+    #     'tqdm', 'pyprind', 'six', 'Cython', 'pandas', 'scikit-learn', 'gensim==3.8.0',
+    # ])
