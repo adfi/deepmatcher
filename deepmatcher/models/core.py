@@ -457,7 +457,12 @@ class MatchingModel(nn.Module):
         state = {'model': self.state_dict()}
         for k in self._train_buffers:
             if include_meta or k != 'state_meta':
-                state[k] = getattr(self, k)
+                if k =='state_meta':
+                    attributes = getattr(self, k)
+                    attributes.__dict__['embeddings'] = None
+                    state[k] = attributes
+                else:
+                    state[k] = getattr(self, k)
         torch.save(state, path)
 
     def load_state(self, path):
