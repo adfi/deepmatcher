@@ -398,8 +398,9 @@ class Runner(object):
         """
         # Create a shallow copy of the model and reset embeddings to use vocab and
         # embeddings from new dataset.
-        model = copy.deepcopy(model)
-        model._reset_embeddings(dataset.vocabs)
+        # turned off updating the vocab elsewhere so no need to reset
+        # model = copy.deepcopy(model)
+        # model._reset_embeddings(dataset.vocabs)
 
         predictions = Runner._run(
             'PREDICT', model, dataset, return_predictions=True, **kwargs)
@@ -407,8 +408,10 @@ class Runner(object):
         pred_table = pred_table.set_index(dataset.id_field)
 
         if output_attributes:
-            raw_table = pd.read_csv(dataset.path).set_index(dataset.id_field)
-            raw_table.index = raw_table.index.astype('str')
-            pred_table = pred_table.join(raw_table)
+            # below doesn't work if dataset.path is data.frame
+            if not isinstance(dataset.path, pd.DataFrame):
+                raw_table = pd.read_csv(dataset.path).set_index(dataset.id_field)
+                raw_table.index = raw_table.index.astype('str')
+                pred_table = pred_table.join(raw_table)
 
         return pred_table
