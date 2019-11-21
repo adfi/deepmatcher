@@ -6,37 +6,38 @@ import zipfile
 import nltk
 import six
 
-import gensim
-from gensim.models import fasttext
+# import gensim
+# from gensim.models import fasttext
 import torch
 from torchtext import data, vocab
 from torchtext.utils import download_from_url
 
 logger = logging.getLogger(__name__)
 
+# Commented here to remove gensim dependency
+# Note that for training this will still need to come from somewhere
+# class GenSimVecs(vocab.Vectors):
+#     default_vector = None
+#     is_w2v_model = False
 
-class GenSimVecs(vocab.Vectors):
-    default_vector = None
-    is_w2v_model = False
+#     def __init__(self, path):
+#         """
+#         Arguments:
+#            path: path to the binary file
+#          """
+#         if os.path.splitext(path)[1] == '.txt':
+#             self.is_w2v_model = True
+#             self.model = gensim.models.KeyedVectors.load_word2vec_format(path)
+#             self.default_vector = torch.Tensor([0] * len(self.model['hello']))
+#         else:
+#             self.model = gensim.models.fasttext.load_facebook_vectors(path)
+#         self.dim = len(self['a'])
 
-    def __init__(self, path):
-        """
-        Arguments:
-           path: path to the binary file
-         """
-        if os.path.splitext(path)[1] == '.txt':
-            self.is_w2v_model = True
-            self.model = gensim.models.KeyedVectors.load_word2vec_format(path)
-            self.default_vector = torch.Tensor([0] * len(self.model['hello']))
-        else:
-            self.model = gensim.models.fasttext.load_facebook_vectors(path)
-        self.dim = len(self['a'])
-
-    def __getitem__(self, token):
-        if self.is_w2v_model:
-            if token not in self.model:
-                return self.default_vector
-        return torch.Tensor(self.model[token])
+#     def __getitem__(self, token):
+#         if self.is_w2v_model:
+#             if token not in self.model:
+#                 return self.default_vector
+#         return torch.Tensor(self.model[token])
 
 
 class FastText(vocab.Vectors):
@@ -100,7 +101,8 @@ class FastTextBinary(vocab.Vectors):
         if not os.path.isfile(path):
             raise RuntimeError('no vectors found at {}'.format(path))
 
-        self.model = fasttext.load_facebook_vectors(path)
+        # self.model = fasttext.load_facebook_vectors(path)
+        self.model = {}
         self.dim = len(self['a'])
 
 
