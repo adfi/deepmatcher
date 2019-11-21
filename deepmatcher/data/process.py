@@ -274,10 +274,11 @@ def process_unlabeled(path, trained_model, tokenizer=None, ignore_columns=None):
     for field, name in reverse_fields_dict.items():
         if field is not None and field.use_vocab:
             # Copy over vocab from original train data.
-            field.vocab = copy.deepcopy(train_info.vocabs[name])
+            # field.vocab = copy.deepcopy(train_info.vocabs[name])
+            field.vocab = train_info.vocabs[name]
             # Then extend the vocab.
-            field.extend_vocab(
-                dataset, vectors=train_info.embeddings, cache=train_info.embeddings_cache)
+            # field.extend_vocab(
+            #     dataset, vectors=train_info.embeddings, cache=train_info.embeddings_cache)
 
     dataset.vocabs = {
         name: dataset.fields[name].vocab
